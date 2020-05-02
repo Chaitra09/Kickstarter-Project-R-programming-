@@ -317,6 +317,8 @@ binsten                    2.3789928948 8.454873e-02   28.13753564 3.404831e-174
 glm.pred     failed successful
   failed       3067        534
   successful    409       1990
+  
+  
 
 
 
