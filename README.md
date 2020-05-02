@@ -152,5 +152,174 @@ Prediction   failed successful
       Balanced Accuracy : 0.6079          
                                           
        'Positive' Class : failed   
+       
+# Logistic Regression with Binning      
+> dim(Data1)
+[1] 20000    28
+> smp_size <- floor(0.70 * nrow(Data1))
+> set.seed(123)
+> train_ind <- sample(seq_len(nrow(Data1)), size = smp_size)
+> train <- Data1[train_ind, ]
+> test <- Data1[-train_ind, ]
+> dim(train)
+[1] 14000    28
+> dim(test)
+[1] 6000   28
+> summary(Data1)
+               name            main_category            deadline          goal                      launched            state      
+ #NAME?          :    5   Film & Video:3711   6/2/2012 5:59 :    6   Min.   :        1   3/26/2013 20:46:    3   failed    :11664  
+ Facade          :    2   Music       :3229   9/1/2010 5:59 :    6   1st Qu.:     2000   8/12/2013 22:10:    3   successful: 8336  
+ Keys to the City:    2   Publishing  :2221   1/1/2012 8:59 :    4   Median :     5000   1/10/2013 20:46:    2                     
+ Music Video     :    2   Art         :1635   11/1/2014 4:59:    4   Mean   :    38148   1/14/2015 3:01 :    2                     
+ My First Film   :    2   Games       :1486   12/1/2014 8:59:    4   3rd Qu.:    15000   1/15/2013 16:01:    2                     
+ Pangaea         :    2   Design      :1322   3/1/2012 3:00 :    4   Max.   :100000000   1/15/2015 1:13 :    2                     
+ (Other)         :19985   (Other)     :6396   (Other)       :19972                       (Other)        :19986                     
+    backers         .data_Film...Video  .data_Music       .data_Food      .data_Crafts     .data_Games      .data_Design   
+ Min.   :     0.0   Min.   :0.0000     Min.   :0.0000   Min.   :0.0000   Min.   :0.0000   Min.   :0.0000   Min.   :0.0000  
+ 1st Qu.:     2.0   1st Qu.:0.0000     1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000  
+ Median :    17.0   Median :0.0000     Median :0.0000   Median :0.0000   Median :0.0000   Median :0.0000   Median :0.0000  
+ Mean   :   113.2   Mean   :0.1855     Mean   :0.1615   Mean   :0.0656   Mean   :0.0232   Mean   :0.0743   Mean   :0.0661  
+ 3rd Qu.:    65.0   3rd Qu.:0.0000     3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.0000  
+ Max.   :105857.0   Max.   :1.0000     Max.   :1.0000   Max.   :1.0000   Max.   :1.0000   Max.   :1.0000   Max.   :1.0000  
+                                                                                                                           
+  .data_Comics    .data_Publishing .data_Fashion    .data_Theater       .data_Art       .data_Photography .data_Technology
+ Min.   :0.0000   Min.   :0.000    Min.   :0.0000   Min.   :0.00000   Min.   :0.00000   Min.   :0.00000   Min.   :0.0000  
+ 1st Qu.:0.0000   1st Qu.:0.000    1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.0000  
+ Median :0.0000   Median :0.000    Median :0.0000   Median :0.00000   Median :0.00000   Median :0.00000   Median :0.0000  
+ Mean   :0.0319   Mean   :0.111    Mean   :0.0518   Mean   :0.03195   Mean   :0.08175   Mean   :0.02845   Mean   :0.0627  
+ 3rd Qu.:0.0000   3rd Qu.:0.000    3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.0000  
+ Max.   :1.0000   Max.   :1.000    Max.   :1.0000   Max.   :1.00000   Max.   :1.00000   Max.   :1.00000   Max.   :1.0000  
+                                                                                                                          
+  .data_Dance      .data_Journalism     Season     Prj_Name_Length.Prj_Name_Length    Duration    Launched_Year  Deadline_Year 
+ Min.   :0.00000   Min.   :0.00000   Fall  :4930   Min.   : 1.00000                Min.   : 1.0   Min.   :2009   Min.   :2009  
+ 1st Qu.:0.00000   1st Qu.:0.00000   Spring:5319   1st Qu.:16.00000                1st Qu.:30.0   1st Qu.:2012   1st Qu.:2012  
+ Median :0.00000   Median :0.00000   Summer:5539   Median :29.00000                Median :30.0   Median :2014   Median :2014  
+ Mean   :0.01265   Mean   :0.01155   Winter:4212   Mean   :30.87895                Mean   :34.5   Mean   :2013   Mean   :2014  
+ 3rd Qu.:0.00000   3rd Qu.:0.00000                 3rd Qu.:46.00000                3rd Qu.:38.0   3rd Qu.:2015   3rd Qu.:2015  
+ Max.   :1.00000   Max.   :1.00000                 Max.   :85.00000                Max.   :92.0   Max.   :2016   Max.   :2016  
+                                                                                                                               
+      bins     
+ Third  :3300  
+ Five   :3066  
+ Second :2961  
+ First  :2728  
+ Fourth :2552  
+ Seven  :2397  
+ (Other):2996  
+> contrasts(Data1$state)
+           successful
+failed              0
+successful          1
+> glm.fits <- glm(state~main_category+backers+Season+goal+Launched_Year+Deadline_Year+Duration+bins,data=Data1,family=binomial,control=list(maxit=100),subset=unlist(train))
+Warning message:
+glm.fit: fitted probabilities numerically 0 or 1 occurred 
+> summary(glm.fits)
+
+Call:
+glm(formula = state ~ main_category + backers + Season + goal + 
+    Launched_Year + Deadline_Year + Duration + bins, family = binomial, 
+    data = Data1, subset = unlist(train), control = list(maxit = 100))
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-8.4904  -0.2658  -0.0108   0.1565   8.4904  
+
+Coefficients:
+                            Estimate Std. Error  z value Pr(>|z|)    
+(Intercept)                7.960e+01  1.445e+01    5.508 3.63e-08 ***
+main_categoryComics       -3.833e-01  7.970e-02   -4.810 1.51e-06 ***
+main_categoryCrafts       -1.439e-01  6.604e-02   -2.178  0.02937 *  
+main_categoryDance         2.529e-01  9.487e-02    2.666  0.00767 ** 
+main_categoryDesign       -6.821e-01  7.891e-02   -8.644  < 2e-16 ***
+main_categoryFashion       5.502e-01  7.678e-02    7.166 7.74e-13 ***
+main_categoryFilm & Video  1.274e+00  4.910e-02   25.937  < 2e-16 ***
+main_categoryFood         -1.453e+00  6.062e-02  -23.972  < 2e-16 ***
+main_categoryGames        -3.047e-01  6.748e-02   -4.515 6.33e-06 ***
+main_categoryJournalism   -8.160e-01  1.204e-01   -6.778 1.22e-11 ***
+main_categoryMusic         2.666e+00  4.630e-02   57.586  < 2e-16 ***
+main_categoryPhotography   1.024e+00  7.429e-02   13.788  < 2e-16 ***
+main_categoryPublishing   -7.609e-01  4.771e-02  -15.948  < 2e-16 ***
+main_categoryTechnology   -5.366e+00  1.782e-01  -30.121  < 2e-16 ***
+main_categoryTheater      -2.843e-01  6.013e-02   -4.729 2.26e-06 ***
+backers                    7.040e-02  4.613e-04  152.620  < 2e-16 ***
+SeasonSpring               1.402e+00  3.332e-02   42.068  < 2e-16 ***
+SeasonSummer              -6.228e-04  3.290e-02   -0.019  0.98490    
+SeasonWinter               6.015e-01  3.762e-02   15.990  < 2e-16 ***
+goal                      -4.305e-04  2.807e-06 -153.389  < 2e-16 ***
+Launched_Year              2.382e+00  4.863e-02   48.979  < 2e-16 ***
+Deadline_Year             -2.422e+00  4.850e-02  -49.948  < 2e-16 ***
+Duration                   6.999e-03  9.381e-04    7.460 8.63e-14 ***
+binsSecond                -1.551e-02  4.206e-02   -0.369  0.71224    
+binsThird                 -2.500e-01  4.270e-02   -5.854 4.79e-09 ***
+binsFourth                -8.380e-01  4.501e-02  -18.618  < 2e-16 ***
+binsFive                   7.183e-01  4.383e-02   16.390  < 2e-16 ***
+binsSix                    1.047e+00  4.344e-02   24.103  < 2e-16 ***
+binsSeven                  1.311e-01  4.247e-02    3.087  0.00203 ** 
+binseight                  6.661e-01  1.688e-01    3.947 7.92e-05 ***
+binsnine                   5.423e-01  3.105e-01    1.746  0.08075 .  
+binsten                    2.379e+00  8.455e-02   28.138  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 260614  on 191983  degrees of freedom
+Residual deviance:  70787  on 191952  degrees of freedom
+  (2421 observations deleted due to missingness)
+AIC: 70851
+
+Number of Fisher Scoring iterations: 13
+> coef(glm.fits)
+            
+ 
+> summary(glm.fits)$coef
+                               Estimate   Std. Error       z value      Pr(>|z|)
+(Intercept)               79.6006531050 1.445203e+01    5.50792285  3.630925e-08
+main_categoryComics       -0.3833478110 7.970220e-02   -4.80975164  1.511179e-06
+main_categoryCrafts       -0.1438623536 6.603809e-02   -2.17847525  2.937067e-02
+main_categoryDance         0.2529380739 9.487178e-02    2.66610445  7.673585e-03
+main_categoryDesign       -0.6820686226 7.890583e-02   -8.64408443  5.423844e-18
+main_categoryFashion       0.5501676633 7.677769e-02    7.16572316  7.737700e-13
+main_categoryFilm & Video  1.2736440940 4.910494e-02   25.93718700 2.536561e-148
+main_categoryFood         -1.4531297568 6.061761e-02  -23.97207091 5.440122e-127
+main_categoryGames        -0.3046666893 6.747843e-02   -4.51502319  6.330984e-06
+main_categoryJournalism   -0.8160221606 1.203916e-01   -6.77806573  1.217954e-11
+main_categoryMusic         2.6659303590 4.629516e-02   57.58550491  0.000000e+00
+main_categoryPhotography   1.0243033306 7.429134e-02   13.78765530  3.024306e-43
+main_categoryPublishing   -0.7609431543 4.771320e-02  -15.94827450  2.928777e-57
+main_categoryTechnology   -5.3662383960 1.781552e-01  -30.12113964 2.562003e-199
+main_categoryTheater      -0.2843481535 6.012935e-02   -4.72894107  2.256939e-06
+backers                    0.0703985950 4.612657e-04  152.62049856  0.000000e+00
+SeasonSpring               1.4017800139 3.332200e-02   42.06770302  0.000000e+00
+SeasonSummer              -0.0006228112 3.290045e-02   -0.01893017  9.848968e-01
+SeasonWinter               0.6015127893 3.761723e-02   15.99035474  1.491791e-57
+goal                      -0.0004305015 2.806591e-06 -153.38945648  0.000000e+00
+Launched_Year              2.3818195007 4.862940e-02   48.97900655  0.000000e+00
+Deadline_Year             -2.4223387149 4.849753e-02  -49.94767551  0.000000e+00
+Duration                   0.0069986697 9.381236e-04    7.46028566  8.633510e-14
+binsSecond                -0.0155137355 4.205913e-02   -0.36885537  7.122355e-01
+binsThird                 -0.2499527490 4.269534e-02   -5.85433356  4.789266e-09
+binsFourth                -0.8379989383 4.501069e-02  -18.61777738  2.305879e-77
+binsFive                   0.7183377862 4.382876e-02   16.38964392  2.267691e-60
+binsSix                    1.0469354506 4.343637e-02   24.10273771 2.339831e-128
+binsSeven                  0.1310786714 4.246802e-02    3.08652685  2.025097e-03
+binseight                  0.6660733520 1.687611e-01    3.94684061  7.918924e-05
+binsnine                   0.5422822391 3.105203e-01    1.74636621  8.074734e-02
+binsten                    2.3789928948 8.454873e-02   28.13753564 3.404831e-174
+
+
+
+  
+
+> glm.probs <-predict(glm.fits,test,type='response')
+> glm.pred <- glm.probs
+> glm.pred[glm.probs>.5] <- "successful"
+> glm.pred[glm.probs<=.5]<- "failed"
+> table(glm.pred,test$state)
+            
+glm.pred     failed successful
+  failed       3067        534
+  successful    409       1990
+
 
   
