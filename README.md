@@ -319,6 +319,375 @@ glm.pred     failed successful
   successful    409       1990
   
   
+KNN CODE- 
+##DATA NORMALIZATION
+
+> data_norm<- function(x) {((x-min(x))/(max(x)-min(x)))} #normalization
+> norm_kick<-as.data.frame(lapply(final_kick[-2],data_norm))
+> final_binddata<-cbind(final_kick[2],norm_kick)
+> trainDF<-final_binddata[1:14000,] #70%
+> testDF<- final_binddata[14001:20000,] #30%
+> #KNN
+> library(class)
+> start.time<-Sys.time()
+
+ #KNN LOOP
+
+> TP=rep(0,80)
+> FP=rep(0,80)
+> TN=rep(0,80)
+> FN=rep(0,80)
+> for (i in 1:80){
++   prediction_2<-knn(trainDF[-1],testDF[-1],final_binddata[1:14000,1],k=i)
++   TP[i]=table(prediction_2,final_binddata[14001:20000,1])[1,1]
++   TN[i]=table(prediction_2,final_binddata[14001:20000,1])[2,2]
++   FP[i]=table(prediction_2,final_binddata[14001:20000,1])[1,2]
++   FN[i]=table(prediction_2,final_binddata[14001:20000,1])[1,2]
++ }
+
+> stop.time<- Sys.time()
+> total.knn.tuningtime<-print(stop.time-start.time)
+Time difference of 6.772924 mins
+> #metrics 
+> accuracytest<-((TP+TN)/(TP+TN+FP+FN))
+> sensitivity_test<-(TP/(TP+FN))
+> specificity<-(TN/(TN+FP))
+> #view metrics
+> accuracytest
+
+> #view metrics
+> accuracytest
+ [1] 0.5689282 0.5678275 0.5636246 0.5665695 0.5604781 0.5658716 0.5653414 0.5654250 0.5685407 0.5684044 0.5687510 0.5640138
+[13] 0.5646322 0.5672881 0.5623544 0.5602748 0.5590649 0.5619462 0.5646216 0.5594645 0.5591799 0.5566579 0.5611801 0.5664596
+[25] 0.5622677 0.5568899 0.5545024 0.5568826 0.5585764 0.5621845 0.5611247 0.5596330 0.5551504 0.5569697 0.5578437 0.5585914
+[37] 0.5589883 0.5568699 0.5618643 0.5548173 0.5500831 0.5486205 0.5477841 0.5516669 0.5497587 0.5514639 0.5526038 0.5499246
+[49] 0.5490580 0.5495414 0.5474518 0.5459024 0.5472488 0.5467025 0.5469844 0.5449547 0.5447130 0.5435169 0.5445398 0.5444084
+[61] 0.5425626 0.5411765 0.5416299 0.5420162 0.5424376 0.5403617 0.5396337 0.5392732 0.5407820 0.5402198 0.5381467 0.5387087
+[73] 0.5371780 0.5376737 0.5401929 0.5394718 0.5418978 0.5409502 0.5409502 0.5393798
+> sensitivity_test
+ [1] 0.6358772 0.6362367 0.6382693 0.6409018 0.6396655 0.6430640 0.6450194 0.6439750 0.6483007 0.6481195 0.6490643 0.6455243
+[13] 0.6471334 0.6490470 0.6469557 0.6440849 0.6449763 0.6464241 0.6482134 0.6441147 0.6443609 0.6427679 0.6460421 0.6503006
+[25] 0.6474551 0.6444280 0.6440264 0.6456037 0.6474750 0.6500367 0.6494141 0.6480938 0.6458636 0.6478805 0.6487007 0.6487923
+[37] 0.6495788 0.6476122 0.6513651 0.6468615 0.6430113 0.6422939 0.6416627 0.6445826 0.6431644 0.6443274 0.6451999 0.6432329
+[49] 0.6427036 0.6435879 0.6431770 0.6422018 0.6429245 0.6429243 0.6435435 0.6423733 0.6426077 0.6420613 0.6429234 0.6434180
+[61] 0.6423307 0.6415441 0.6418391 0.6420520 0.6428244 0.6409373 0.6410784 0.6407678 0.6420908 0.6415353 0.6404188 0.6409732
+[73] 0.6393704 0.6398450 0.6420118 0.6417707 0.6435711 0.6431808 0.6431808 0.6421624
+> specificity
+ [1] 0.4718137 0.4677288 0.4501634 0.4534314 0.4366830 0.4460784 0.4395425 0.4424020 0.4419935 0.4419935 0.4407680 0.4338235
+[13] 0.4317810 0.4358660 0.4244281 0.4248366 0.4183007 0.4244281 0.4289216 0.4219771 0.4203431 0.4158497 0.4227941 0.4297386
+[25] 0.4227941 0.4121732 0.4048203 0.4089052 0.4097222 0.4154412 0.4133987 0.4117647 0.4019608 0.4027778 0.4035948 0.4060458
+[37] 0.4052288 0.4031863 0.4105392 0.3978758 0.3917484 0.3884804 0.3872549 0.3929739 0.3901144 0.3929739 0.3946078 0.3905229
+[49] 0.3888889 0.3880719 0.3815359 0.3786765 0.3815359 0.3794935 0.3786765 0.3745915 0.3729575 0.3700980 0.3713235 0.3692810
+[61] 0.3656046 0.3627451 0.3635621 0.3643791 0.3635621 0.3615196 0.3582516 0.3578431 0.3594771 0.3590686 0.3545752 0.3549837
+[73] 0.3541667 0.3545752 0.3574346 0.3553922 0.3590686 0.3566176 0.3566176 0.3537582
+
+
+KNN CROSS VALIDATION
+
+> library(caret)
+> set.seed(42)
+> start.time<-Sys.time()
+> trControl <- trainControl(method  = "repeatedcv",
++                           number  = 10)
+> set.seed(2)
+> fit <- train(state ~ .,
++              data       = final_binddata,
++             method     = "knn",
++             tuneGrid   = expand.grid(k = 70:80),
++             trControl  = trControl,
++             metric     = "Specificity"
++ )
+
+> fit
+k-Nearest Neighbors 
+
+20000 samples
+   38 predictor
+    2 classes: 'failed', 'successful' 
+
+No pre-processing
+Resampling: Cross-Validated (10 fold, repeated 1 times) 
+Summary of sample sizes: 17999, 17999, 18000, 18000, 18000, 17999, ... 
+Resampling results across tuning parameters:
+
+  k   Accuracy   Kappa    
+  70  0.6151010  0.1657505
+  71  0.6144006  0.1639236
+  72  0.6139508  0.1627879
+  73  0.6144007  0.1632637
+  74  0.6147507  0.1635595
+  75  0.6146511  0.1629551
+  76  0.6150505  0.1640697
+  77  0.6138503  0.1611800
+  78  0.6138004  0.1607120
+  79  0.6136503  0.1597471
+  80  0.6140000  0.1600700
+
+Accuracy was used to select the optimal model using the largest value.
+The final value used for the model was k = 70.
+
+> plot(fit)
+ 
+> pred<-predict(fit, newdata = final_binddata)
+> confusionMatrix(pred,final_binddata$state)
+Confusion Matrix and Statistics
+
+            Reference
+Prediction   failed successful
+  failed       9391       5104
+  successful   2273       3232
+                                          
+               Accuracy : 0.6312          
+                 95% CI : (0.6244, 0.6378)
+    No Information Rate : 0.5832          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+                  Kappa : 0.2027          
+ Mcnemar's Test P-Value : < 2.2e-16       
+                                          
+            Sensitivity : 0.8051          
+            Specificity : 0.3877          
+         Pos Pred Value : 0.6479          
+         Neg Pred Value : 0.5871          
+             Prevalence : 0.5832          
+         Detection Rate : 0.4696     
+
+
+
+
+
+LDA CODE-
+> getwd()
+[1] "/Users/muskanjindal"
+> Data1 <- read.csv("/Users/muskanjindal/Desktop/kickstarter-projects/proj.csv")
+> head(Data1)
+                                                      name main_category      deadline goal      launched      state
+1                  Acting Out Yoga Presents: Anna in Paris    Publishing  7/2/12 23:08 1500  6/2/12 23:08     failed
+2                                  Auto Icon Screen Prints        Design  3/18/15 1:00 1500 2/12/15 19:20 successful
+3 Peter Squires' New 7" Record - Recorded by Steve Albini!         Music   2/1/16 3:00  500  1/5/16 20:40 successful
+4                                   Much Ado About Nothing       Theater 4/30/12 22:00 6000 3/29/12 15:08     failed
+5                                                    Bacon          Food  9/9/14 21:18   23 7/11/14 21:18     failed
+6                                          MARLEY WAS DEAD    Publishing  8/1/13 19:00 4000  7/1/13 19:00 successful
+  backers .data_Film...Video .data_Music .data_Food .data_Crafts .data_Games .data_Design .data_Comics .data_Publishing
+1       0                  0           0          0            0           0            0            0                1
+2     971                  0           0          0            0           0            1            0                0
+3      31                  0           1          0            0           0            0            0                0
+4       9                  0           0          0            0           0            0            0                0
+5       0                  0           0          1            0           0            0            0                0
+6      99                  0           0          0            0           0            0            0                1
+  .data_Fashion .data_Theater .data_Art .data_Photography .data_Technology .data_Dance .data_Journalism Season
+1             0             0         0                 0                0           0                0 Summer
+2             0             0         0                 0                0           0                0 Winter
+3             0             0         0                 0                0           0                0 Winter
+4             0             1         0                 0                0           0                0 Spring
+5             0             0         0                 0                0           0                0 Summer
+6             0             0         0                 0                0           0                0 Summer
+  Prj_Name_Length Duration Launched_Year Deadline_Year
+1              39       30          2012          2012
+2              23       34          2015          2015
+3              56       27          2016          2016
+4              22       32          2012          2012
+5               5       60          2014          2014
+6              15       31          2013          2013
+> num_columns <- c('Prj_Name_Length')
+> Data1[num_columns] <- sapply(Data1[num_columns], as.numeric)
+> Prj_Name_Length<-Data1$Prj_Name_Length
+> Prj_Name_Length
+[2,]              16
+    [3,]              52
+    [4,]              15
+    [5,]              45
+    [6,]               7
+    [7,]              54
+    [8,]              54
+    [9,]              20
+   [10,]              55
+#As the result set is huge, we have shown only specific rows.
+
+> cut(Prj_Name_Length,10)
+   [1] (26.2,34.6] (9.4,17.8]  (51.4,59.8] (9.4,17.8]  (43,51.4]   (0.916,9.4] (51.4,59.8] (51.4,59.8] (17.8,26.2]
+  [10] (51.4,59.8] (0.916,9.4] (51.4,59.8] (43,51.4]   (0.916,9.4] (9.4,17.8]  (0.916,9.4] (17.8,26.2] (9.4,17.8] 
+  [19] (51.4,59.8] (34.6,43]   (17.8,26.2] (9.4,17.8]  (43,51.4]   (43,51.4]   (34.6,43]   (17.8,26.2] (43,51.4]  
+  [28] (0.916,9.4] (51.4,59.8] (34.6,43]   (34.6,43]   (34.6,43]   (0.916,9.4] (17.8,26.2] (26.2,34.6] (51.4,59.8]
+  [37] (9.4,17.8]  (26.2,34.6] (43,51.4]   (17.8,26.2] (0.916,9.4] (51.4,59.8] (9.4,17.8]  (26.2,34.6] (51.4,59.8]
+  [46] (17.8,26.2] (34.6,43]   (51.4,59.8] (51.4,59.8] (0.916,9.4] (0.916,9.4] (0.916,9.4] (34.6,43]   (34.6,43]  
+  [55] (0.916,9.4] (43,51.4]   (43,51.4]   (34.6,43]   (17.8,26.2] (43,51.4]   (51.4,59.8] (17.8,26.2] (17.8,26.2]
+> Data1$bins<-cut(Prj_Name_Length,10,labels=c("First","Second","Third","Fourth","Five","Six","Seven","eight","nine","ten"))
+> Data1
+                                                                                       name main_category       deadline
+1                                                   Acting Out Yoga Presents: Anna in Paris    Publishing   7/2/12 23:08
+2                                                                   Auto Icon Screen Prints        Design   3/18/15 1:00
+3                                  Peter Squires' New 7" Record - Recorded by Steve Albini!         Music    2/1/16 3:00
+4                                                                    Much Ado About Nothing       Theater  4/30/12 22:00
+5                                                                                     Bacon          Food   9/9/14 21:18
+6                                                                           MARLEY WAS DEAD    Publishing   8/1/13 19:00
+7                                Hip-Hop Script - Rhyming Prose in Poetic Storytelling Form    Publishing 10/30/14 21:58
+8                                They All Fall Down: Book and Music Inspired by True Events    Publishing   3/15/13 4:59
+9                                                               Power outage survival stove        Design   6/7/16 17:07
+10                              Po-Rum-Bo - A card matching game with an intersecting twist         Games   5/29/12 3:00
+11                                                                         Go F#@D yourself        Crafts   11/7/14 0:11
+12                             Launch Franklin Home Page: The Go To Place for Franklin News    Journalism   8/31/12 1:38
+13                                       The First (Ever!) Buffalo Cherry Blossom Festival!           Art 12/31/13 21:15
+14                                                                         Cookie Dunk Dunk         Games   4/5/14 16:14
+15                                                                 RiverRock Music Festival         Music   11/3/14 6:00
+16                                                                        Heroes Everywhere           Art   6/6/12 22:31
+17                                                                High Voltage Image Making           Art  3/26/14 16:33
+18                                                                     CMYK 4 Poster Series        Design  7/19/12 22:35
+19                             Forensics Forever!- Committed to performing arts excellence!       Theater  5/25/15 18:46
+20                                             Nuanced Concrete: Postcards from Apocalypses           Art   8/30/13 3:10
+> smp_size <- floor(0.70*nrow(proj))
+> set.seed(123)
+> train_ind <- sample(seq_len(nrow(Data1)), size=smp_size)
+> train <- Data1[train_ind, ]
+> test <- Data1[-train_ind, ]
+> dim(train)
+[1] 14000    28
+> dim(test)
+[1] 6000   28
+> library(MASS)
+> lda.fit=lda(state ~ main_category+goal+Season+Launched_Year+Duration+Deadline_Year+bins, train)
+> lda.fit
+Call:
+lda(state ~ main_category + goal + Season + Launched_Year + Duration + 
+    Deadline_Year + bins, data = train)
+
+Prior probabilities of groups:
+    failed successful 
+ 0.5848571  0.4151429 
+
+Group means:
+           main_categoryComics main_categoryCrafts main_categoryDance main_categoryDesign main_categoryFashion
+failed              0.02296043          0.03004397        0.006717147          0.06924768           0.05959941
+successful          0.04129387          0.01428080        0.020474880          0.05970406           0.03940124
+           main_categoryFilm & Video main_categoryFood main_categoryGames main_categoryJournalism main_categoryMusic
+failed                     0.1836834        0.07694187         0.07034685             0.016243283          0.1308012
+successful                 0.1866827        0.04886442         0.08224363             0.007226428          0.2088782
+           main_categoryPhotography main_categoryPublishing main_categoryTechnology main_categoryTheater      goal
+failed                   0.03297509              0.12652662              0.07840743           0.01831949 50520.798
+successful               0.02271163              0.08843772              0.04026153           0.05075705  9337.762
+           SeasonSpring SeasonSummer SeasonWinter Launched_Year Duration Deadline_Year binsSecond binsThird binsFourth
+failed        0.2641671    0.2805325    0.2149487      2013.664 35.74145      2013.733  0.1606009 0.1653639  0.1212750
+successful    0.2713352    0.2646249    0.2064694      2013.244 32.78527      2013.302  0.1305919 0.1637990  0.1383345
+            binsFive   binsSix binsSeven   binseight    binsnine    binsten
+failed     0.1373962 0.1069858 0.1133366 0.009159746 0.002076209 0.02283830
+successful 0.1720578 0.1290434 0.1297316 0.008258775 0.002236752 0.01892636
+
+Coefficients of linear discriminants:
+                                    LD1
+main_categoryComics        1.001926e+00
+main_categoryCrafts       -1.244674e+00
+main_categoryDance         1.700155e+00
+main_categoryDesign       -3.788295e-01
+main_categoryFashion      -8.358232e-01
+main_categoryFilm & Video -1.688718e-01
+main_categoryFood         -8.137964e-01
+main_categoryGames         1.958781e-01
+main_categoryJournalism   -1.415591e+00
+main_categoryMusic         5.382244e-01
+main_categoryPhotography  -9.493042e-01
+main_categoryPublishing   -8.754542e-01
+main_categoryTechnology   -1.098039e+00
+main_categoryTheater       1.420326e+00
+goal                      -1.352643e-07
+SeasonSpring              -1.372865e-02
+SeasonSummer              -2.104731e-01
+SeasonWinter              -4.520619e-03
+Launched_Year              5.483242e-02
+Duration                  -3.834316e-02
+Deadline_Year             -2.974260e-01
+binsSecond                 2.905303e-01
+binsThird                  5.239005e-01
+binsFourth                 7.625072e-01
+binsFive                   9.358461e-01
+binsSix                    9.464679e-01
+binsSeven                  8.967967e-01
+binseight                  4.668420e-01
+binsnine                   3.298359e-02
+binsten                    3.091376e-01
+> lda.pred=predict(lda.fit, Data1)
+> names(lda.pred)
+[1] "class"     "posterior" "x"        
+> lda.class=lda.pred$class
+> table(lda.class, Data1[,6])
+            
+lda.class    failed successful
+  failed       9449       5163
+  successful   2215       3173
+> mean(lda.class==Data1[,6])
+[1] 0.6311
+> sum(lda.pred$posterior[,1]>=.5)
+[1] 14612
+> sum(lda.pred$posterior[,1]<.5)
+[1] 5388
+> lda.pred$posterior[1:20,1]
+        1         2         3         4         5         6         7         8         9        10        11        12 
+0.6073702 0.6941895 0.4766350 0.3297543 0.7782492 0.7410805 0.6269357 0.6311821 0.8060586 0.5324853 0.7799336 0.6628902 
+       13        14        15        16        17        18        19        20 
+0.4859957 0.6818374 0.6056855 0.5631569 0.5561951 0.6815137 0.3639249 0.4845823 
+> lda.class[1:20]
+ [1] failed     failed     successful successful failed     failed     failed     failed     failed     failed    
+[11] failed     failed     successful failed     failed     failed     failed     failed     successful successful
+Levels: failed successful
+> sum(lda.pred$posterior[,1]>.9)
+[1] 11
+ 
+LDA CROSS VALIDATION
+> library(MASS)
+> library(dplyr)
+> Data1 <- read.csv("/Users/muskanjindal/Desktop/kickstarter-projects/proj.csv")
+> head(Data1)
+                                                      name main_category      deadline goal      launched      state
+1                  Acting Out Yoga Presents: Anna in Paris    Publishing  7/2/12 23:08 1500  6/2/12 23:08     failed
+2                                  Auto Icon Screen Prints        Design  3/18/15 1:00 1500 2/12/15 19:20 successful
+3 Peter Squires' New 7" Record - Recorded by Steve Albini!         Music   2/1/16 3:00  500  1/5/16 20:40 successful
+4                                   Much Ado About Nothing       Theater 4/30/12 22:00 6000 3/29/12 15:08     failed
+5                                                    Bacon          Food  9/9/14 21:18   23 7/11/14 21:18     failed
+6                                          MARLEY WAS DEAD    Publishing  8/1/13 19:00 4000  7/1/13 19:00 successful
+  backers .data_Film...Video .data_Music .data_Food .data_Crafts .data_Games .data_Design .data_Comics .data_Publishing
+1       0                  0           0          0            0           0            0            0                1
+2     971                  0           0          0            0           0            1            0                0
+3      31                  0           1          0            0           0            0            0                0
+4       9                  0           0          0            0           0            0            0                0
+5       0                  0           0          1            0           0            0            0                0
+6      99                  0           0          0            0           0            0            0                1
+  .data_Fashion .data_Theater .data_Art .data_Photography .data_Technology .data_Dance .data_Journalism Season
+1             0             0         0                 0                0           0                0 Summer
+2             0             0         0                 0                0           0                0 Winter
+3             0             0         0                 0                0           0                0 Winter
+4             0             1         0                 0                0           0                0 Spring
+5             0             0         0                 0                0           0                0 Summer
+6             0             0         0                 0                0           0                0 Summer
+  Prj_Name_Length Duration Launched_Year Deadline_Year
+1              39       30          2012          2012
+2              23       34          2015          2015
+3              56       27          2016          2016
+4              22       32          2012          2012
+5               5       60          2014          2014
+6              15       31          2013          2013
+> num_columns <- c('Prj_Name_Length')
+> Data1[num_columns] <- sapply(Data1[num_columns], as.numeric)
+> Prj_Name_Length<-Data1$Prj_Name_Length
+> Prj_Name_Length   
+ [2,]              16
+    [3,]              52
+    [4,]              15
+    [5,]              45
+    [6,]               7
+    [7,]              54
+    [8,]              54
+    [9,]              20
+   [10,]              55
+[ reached getOption("max.print") -- omitted 19000 rows ]
+# As the result set is huge, we have shown only specific rows.
+
+> cut(Prj_Name_Length,10)
+   [1] (26.2,34.6] (9.4,17.8]  (51.4,59.8] (9.4,17.8]  (43,51.4]   (0.916,9.4] (51.4,59.8] (51.4,59.8] (17.8,26.2]
+  [10] (51.4,59.8] (0.916,9.4] (51.4,59.8] (43,51.4]   (0.916,9.4] (9.4,17.8]  (0.916,9.4] (17.8,26.2] (9.4,17.8] 
+  [19] (51.4,59.8] (34.6,43]   (17.8,26.2] (9.4,17.8]  (43,51.4]   (43,51.4]   (34.6,43]   (17.8,26.2] (43,51.4]  
+  [28] (0.916,9.4] (51.4,59.8] (34.6,43]   (34.6,43]   (34.6,43]   (0.916,9.4] (17.8,26.2] (26.2,34.6] (51.4,59.8]
+  [37] (9.4,17.8]  (26.2,34.6] (43,51.4]   (17.8,26.2] (0.916,9.4] (51.4,59.8] (9.4,17.8]  (26.2,34.6] (51.4,59.8]
+  [46] (17.8,26.2] (34.6,43]   (51.4,59.8] (51.4,59.8] (0.916,9.4] (0.916,9.4] (0.916,9.4] (34.6,43]   (34.6,43]  
+  [55] (0.916,9.4] (43,51.4]   (43,51.4]   (34.6,43]   (17.8,26.2] (43,51.4]   (51.4,59.8] (17.8,26.2] (17.8,26.2]
 
 
 
