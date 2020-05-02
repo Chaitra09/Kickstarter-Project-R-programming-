@@ -308,9 +308,6 @@ binsnine                   0.5422822391 3.105203e-01    1.74636621  8.074734e-02
 binsten                    2.3789928948 8.454873e-02   28.13753564 3.404831e-174
 
 
-
-  
-
 > glm.probs <-predict(glm.fits,test,type='response')
 > glm.pred <- glm.probs
 > glm.pred[glm.probs>.5] <- "successful"
@@ -320,6 +317,8 @@ binsten                    2.3789928948 8.454873e-02   28.13753564 3.404831e-174
 glm.pred     failed successful
   failed       3067        534
   successful    409       1990
+
+
 
 
   
