@@ -118,5 +118,39 @@ Data1
 20      8/30/2013 3:10       307.00    8/1/2013 3:10     failed      12                  0           0          0
 21      3/24/2012 5:00      1000.00   3/6/2012 19:24     failed      14                  0           0          0
   
-  
+# 10 Fold Cross Validation
+> Train <- createDataPartition(Data1$state, p=0.7, list=FALSE)
+> training <- Data1[ Train, ]
+> testing <- Data1[ -Train, ]
+> ctrl <- trainControl(method = "repeatedcv", number = 10, savePredictions = TRUE)
+> mod_fit <- train(state ~ main_category+goal+Season+Launched_Year+Duration+Deadline_Year,data=Data1, method="glm", family="binomial",trControl = ctrl, tuneLength = 5)
+There were 11 warnings (use warnings() to see them)
+> pred = predict(mod_fit, newdata=testing)
+> confusionMatrix(data=pred, testing$state)
+Confusion Matrix and Statistics
+
+            Reference
+Prediction   failed successful
+  failed       2752       1427
+  successful    747       1073
+                                          
+               Accuracy : 0.6376          
+                 95% CI : (0.6253, 0.6498)
+    No Information Rate : 0.5833          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+                  Kappa : 0.2244          
+ Mcnemar's Test P-Value : < 2.2e-16       
+                                          
+            Sensitivity : 0.7865          
+            Specificity : 0.4292          
+         Pos Pred Value : 0.6585          
+         Neg Pred Value : 0.5896          
+             Prevalence : 0.5833          
+         Detection Rate : 0.4587          
+   Detection Prevalence : 0.6966          
+      Balanced Accuracy : 0.6079          
+                                          
+       'Positive' Class : failed   
+
   
